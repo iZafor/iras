@@ -1,0 +1,12 @@
+bounded-pool-executor==0.0.3
+certifi==2023.7.22
+charset-normalizer==3.2.0
+idna==3.4
+pqdm==0.2.0
+prettytable==3.9.0
+requests==2.31.0
+tqdm==4.66.1
+typing_extensions==4.9.0
+urllib3==2.0.4
+wcwidth==0.2.6
+XlsxWriter==3.1.3
