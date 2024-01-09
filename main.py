@@ -1,7 +1,7 @@
 #!./venv/bin/python3
 from IRAS import IRAS
 
-CREDENTIALS_PROMT_TEXT = """
+CREDENTIALS_PROMPT_TEXT = """
 ################################################
 # Enter your student id and password separated #
 # by space e.g 123 ABC                         #
@@ -10,24 +10,26 @@ CREDENTIALS_PROMT_TEXT = """
 ################################################
 ID and Password: """
 
-OPTION_PROMT_TEXT = """
+OPTION_PROMPT_TEXT = """
 ################################################
 # Select option:                               #
 # 1. Show Grades                               #
 # 2. Save Offered Course Details               #
 # 3. Re-login                                  #
+#                                              #
 # Enter anything else to quit                  #
 ################################################
 Option: """
 
-COURSE_QUERY_PROMT_TEXT = """
+COURSE_QUERY_PROMPT_TEXT = """
 ################################################
 # Enter query course codes separated by space  #
 # e.g ENG101 ENG102 ...                        #
+# * LABS are auto detected                     #
 ################################################
 Codes: """
 
-FILE_FORMAT_PROMT_TEXT = """
+FILE_FORMAT_PROMPT_TEXT = """
 ################################################
 # Save file as -                               #
 # 1. Text only                                 #
@@ -42,7 +44,7 @@ if __name__ == "__main__":
     re_login = False
     try:
         iras = IRAS()
-        while (cred_data := input(CREDENTIALS_PROMT_TEXT).split(" ", 1)):
+        while (cred_data := input(CREDENTIALS_PROMPT_TEXT).split(" ", 1)):
             if len(cred_data) == 1 and cred_data[0] == "q":
                 break
             if len(cred_data) != 2:
@@ -50,14 +52,14 @@ if __name__ == "__main__":
                 continue
             if iras.authenticate_user(cred_data[0], cred_data[1]):
                 re_login = False
-                while (command := input(OPTION_PROMT_TEXT)) and command.isdigit():
+                while (command := input(OPTION_PROMPT_TEXT)) and command.isdigit():
                     print()
                     match int(command):
                         case 1:
                             iras.show_grades()
                         case 2:
-                            query_course_ids = input(COURSE_QUERY_PROMT_TEXT).split(" ")
-                            file_format = input(FILE_FORMAT_PROMT_TEXT)
+                            query_course_ids = input(COURSE_QUERY_PROMPT_TEXT).split(" ")
+                            file_format = input(FILE_FORMAT_PROMPT_TEXT)
                             save_as = FILE_FORMATS[2]
                             match file_format.isdigit():
                                 case False:

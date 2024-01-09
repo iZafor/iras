@@ -20,7 +20,10 @@ class OfferedCourse:
         """
         Expects a list of query ids in lower case
         """
-        return self.course_id in query_ids
+        for query in query_ids:
+            if self.course_id.find(query) != -1:
+                return True
+        return False
 
     def as_list(self) -> list[_T]:
         res = list(self.__dict__.values())
@@ -40,7 +43,7 @@ class OfferedCourse:
             data["enrolled"],
             data["vacancy"],
             time_formatter(data["timeSlot"].strip()),
-            data["facultyName"].strip(),
+            data["facualtyName"].strip(),
         )
 
 

@@ -66,7 +66,7 @@ class IRAS:
         registered_courses =  {year: registered_courses[year] for year in sorted(registered_courses)}
         total_gpa: float = 0.0
         total_credit_count: int = 0
-        table = PrettyTable(field_names=CONST.REGISTERED_COURSE_FILEDS)
+        table = PrettyTable(field_names=CONST.REGISTERED_COURSE_FIELDS)
         for _, a_year in registered_courses.items():
             for semester in a_year.semesters:
                 s_cgpa: float = 0.0
@@ -107,7 +107,7 @@ class IRAS:
             map(lambda c: OfferedCourse.NEW_INSTANCE(c, get_formatted_time),
                     self.__fetch_json_data(
                         api=CONST.ALL_OFFERED_COURSES_API(self.__student_id),
-                        interval=0.01
+                        interval=0
                         )["data"]["eligibleOfferCourses"]
                 )
         )
@@ -168,7 +168,7 @@ class IRAS:
             pickle.dump(new_auth_data, auth_file)
         return new_auth_data.auth_token
 
-    def __validate_respose_status(self, response: requests.Response) -> None:
+    def __validate_response_status(self, response: requests.Response) -> None:
         if response.status_code != 200:
             raise requests.HTTPError(
                 f"Falied to complete the request at {response.url}! Status code {response.status_code}.")
@@ -186,7 +186,7 @@ class IRAS:
         downloaded_data = b""
         chunk_size = 1024 #KB
         if validate_response:
-            self.__validate_respose_status(response)
+            self.__validate_response_status(response)
         pbar = tqdm(total=data_size, desc="Fetching data: " if not progress_message else progress_message, unit="B")
       
         for data in response.iter_content(chunk_size=chunk_size):
