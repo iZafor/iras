@@ -26,7 +26,7 @@ class OfferedCourse:
         return False
 
     def as_list(self) -> list[_T]:
-        return [self.course_id, self.course_name, self.section, self.time_slot, self.capacity, self.enrolled, self.vacancy, self.faculty]
+        return [self.course_id.upper(), self.course_name, self.section, self.time_slot, self.capacity, self.enrolled, self.vacancy, self.faculty]
 
     def __str__(self) -> str:
         return f"CODE: {self.course_id.upper()}, NAME: {self.course_name}, SECTION: {self.section}, TIME SLOT: {self.time_slot}, CAPACITY: {self.capacity}, ENROLLED: {self.enrolled}, VACANCY: {self.vacancy}, FACULTY: {self.faculty}"

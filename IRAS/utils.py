@@ -28,7 +28,7 @@ def get_formatted_time(time_str: str) -> str:
 
 def save_as_txt(queried_courses: list[OfferedCourse], sections_count: list[int]) -> None:
     table = PrettyTable(
-        field_names=CONST.DETAILED_COURSE_FIELDS
+        field_names=CONST.OFFERED_COURSE_FIELDS
     )
 
     i, count = 0, 0
@@ -36,7 +36,7 @@ def save_as_txt(queried_courses: list[OfferedCourse], sections_count: list[int])
         if i < len(sections_count) and count == sections_count[i]:
             i += 1
             count = 0
-            table.add_row(["+"] * len(CONST.DETAILED_COURSE_FIELDS))
+            table.add_row(["+"] * len(CONST.OFFERED_COURSE_FIELDS))
         count += 1
         table.add_row(course.as_list())
 
@@ -49,7 +49,7 @@ def save_as_xls(queried_courses: list[OfferedCourse]) -> None:
     xls_file_path = "files/course_details.xlsx"
     wb = xlsxwriter.Workbook(xls_file_path)
     ws = wb.add_worksheet("Course Details")
-    ws.write_row(0, 0, CONST.DETAILED_COURSE_FIELDS)
+    ws.write_row(0, 0, CONST.OFFERED_COURSE_FIELDS)
 
     for r in range(1, len(queried_courses)):
         ws.write_row(r, 0, queried_courses[r-1].as_list())
