@@ -10,17 +10,17 @@ class OfferedCourse:
     course_id: str
     course_name: str
     section: _T
+    time_slot: str
     capacity: _T
     enrolled: _T
     vacancy: _T
-    time_slot: str
-    facualty: str
+    faculty: str
 
-    def any_match(self, queery_ids: list[str]) -> bool:
+    def any_match(self, query_ids: list[str]) -> bool:
         """
         Expects a list of query ids in lower case
         """
-        return self.course_id in queery_ids
+        return self.course_id in query_ids
 
     def as_list(self) -> list[_T]:
         res = list(self.__dict__.values())
@@ -28,10 +28,10 @@ class OfferedCourse:
         return res
 
     def __str__(self) -> str:
-        return f"CODE: {self.course_id.upper()}, NAME: {self.course_name}, SECTION: {self.section}, TIME SLOT: {self.time_slot}, CAPACITY: {self.capacity}, ENREOLLED: {self.enrolled}, VACANCY: {self.vacancy}, FACULTY: {self.facualty}"
+        return f"CODE: {self.course_id.upper()}, NAME: {self.course_name}, SECTION: {self.section}, TIME SLOT: {self.time_slot}, CAPACITY: {self.capacity}, ENROLLED: {self.enrolled}, VACANCY: {self.vacancy}, FACULTY: {self.faculty}"
 
     @staticmethod
-    def NEW_INSTANCE(data: dict[str, _T], time_formmater: Callable[[str], str]) -> OfferedCourse:
+    def NEW_INSTANCE(data: dict[str, _T], time_formatter: Callable[[str], str]) -> OfferedCourse:
         return OfferedCourse(
             data["courseId"].lower().strip(),
             data["courseName"].strip(),
@@ -39,8 +39,8 @@ class OfferedCourse:
             data["capacity"],
             data["enrolled"],
             data["vacancy"],
-            time_formmater(data["timeSlot"].strip()),
-            data["facualtyName"].strip(),
+            time_formatter(data["timeSlot"].strip()),
+            data["facultyName"].strip(),
         )
 
 
@@ -83,6 +83,6 @@ class RegisteredCourse:
 
 Semester = NamedTuple("Semester", [("semester_name", str), ("courses", list[RegisteredCourse])])
 
-AcademicYear = NamedTuple("AcademicYear", [("semsters", list[Semester])])
+AcademicYear = NamedTuple("AcademicYear", [("semesters", list[Semester])])
 
 AuthData = NamedTuple("AuthData", [("student_id", int), ("auth_token", str), ("expires", datetime)])

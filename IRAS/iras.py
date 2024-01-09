@@ -48,7 +48,7 @@ class IRAS:
                 pbar.update(1)
                 continue
 
-            semesters = registered_courses.get(course.registered_year).semsters
+            semesters = registered_courses.get(course.registered_year).semesters
             for semester in semesters:
                 if semester.semester_name == course.registered_semester:
                     semester.courses.append(course)
@@ -68,7 +68,7 @@ class IRAS:
         total_credit_count: int = 0
         table = PrettyTable(field_names=CONST.REGISTERED_COURSE_FILEDS)
         for _, a_year in registered_courses.items():
-            for semester in a_year.semsters:
+            for semester in a_year.semesters:
                 s_cgpa: float = 0.0
                 s_credit_count: int = 0
                 for course in semester.courses:

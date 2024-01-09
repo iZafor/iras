@@ -4,7 +4,7 @@ ALL_OFFERED_COURSES_API = lambda id: f"https://iras.iub.edu.bd:8079//api/v1/regi
 ALL_REGISTERED_COURSE_API = lambda id: f"https://iras.iub.edu.bd:8079//api/v1/registration/student-registered-courses/{id}/all"
 
 DETAILED_COURSE_FIELDS = ["CODE", "NAME", "SECTION",
-          "TIME SLOT", "CAPACITY", "ENREOLLED", "VACANCY", "FACULTY"]
+          "TIME SLOT", "CAPACITY", "ENROLLED", "VACANCY", "FACULTY"]
 
 REGISTERED_COURSE_FILEDS = [
     "CODE", "NAME", "REGISTERED YEAR", "REGISTERED SEMESTER", "GRADE"
