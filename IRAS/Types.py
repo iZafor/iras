@@ -37,10 +37,10 @@ class OfferedCourse:
             data["courseId"].lower().strip(),
             data["courseName"].strip(),
             data["section"],
+            time_formatter(data["timeSlot"].strip()),
             data["capacity"],
             data["enrolled"],
             data["vacancy"],
-            time_formatter(data["timeSlot"].strip()),
             data["facualtyName"].strip(),
         )
 
