@@ -10,7 +10,7 @@ from prettytable.prettytable import PrettyTable
 
 import IRAS.constants as CONST
 from IRAS.Types import OfferedCourse, RegisteredCourse, AcademicYear, Semester, AuthData
-from IRAS.utils import save_as_txt, save_as_xls, get_formatted_time, parse_grade
+from IRAS.utils import save_as_txt, save_as_xls, get_formatted_time, parse_grade, get_semester_order
 
 class IRAS:
     def __init__(self) -> None:
@@ -32,6 +32,8 @@ class IRAS:
                                 ))
         
         pbar = tqdm(total=len(registered_courses_map), desc="Processing data: ")
+        
+        # parse data
         for course in registered_courses_map:
             if course.registered_year not in registered_courses.keys():
                 registered_courses.update({
@@ -40,6 +42,7 @@ class IRAS:
                         [
                             Semester(
                                 course.registered_semester,
+                                get_semester_order(course.registered_semester),
                                 [course]
                             )
                         ]
@@ -57,18 +60,26 @@ class IRAS:
                 semesters.append(
                     Semester(
                         course.registered_semester,
+                        get_semester_order(course.registered_semester),
                         [course]
                     )
                 )
             pbar.update(1)
         pbar.close()
 
+        # order semesters by year 
         registered_courses =  {year: registered_courses[year] for year in sorted(registered_courses)}
-        total_gpa: float = 0.0
+
+        # calculate grades
+        completed_course_map = dict() # to avoid counting same course more than once
+        total_grade: float = 0.0
         total_credit_count: int = 0
         table = PrettyTable(field_names=CONST.REGISTERED_COURSE_FIELDS)
-        for _, a_year in registered_courses.items():
-            for semester in a_year.semesters:
+        for a_year in registered_courses.values():
+            # organize semesters (spring -> summer -> autumn)
+            sorted_semesters = sorted(a_year.semesters, key=lambda s: s.order)
+
+            for semester in sorted_semesters:
                 s_cgpa: float = 0.0
                 s_credit_count: int = 0
                 for course in semester.courses:
@@ -76,8 +87,7 @@ class IRAS:
                     if course.grade:
                         s_cgpa += course.grade * course.credit_count
                         s_credit_count += course.credit_count
-                total_gpa+= s_cgpa
-                total_credit_count += s_credit_count
+                        completed_course_map.update({course.course_id: (course.grade, course.credit_count)})
                 table.add_row([""] * 5)
                 table.add_row(["-----", "-----", "-----", "-----", f"GPA: {0.0 if not s_credit_count else round(s_cgpa / s_credit_count, 2)}"])
                 table.add_row([""] * 5)
@@ -85,7 +95,11 @@ class IRAS:
                 table.add_row(["*"] * 5)
                 table.add_row([""] * 5)
 
-        table.add_row(["", "", "", "", f"CGPA: {0.0 if not total_credit_count else round(total_gpa / total_credit_count, 2)}"])
+        for grade, credit in completed_course_map.values():
+            total_grade += grade * credit
+            total_credit_count += credit
+
+        table.add_row(["", "", "", "", f"CGPA: {0.0 if not total_credit_count else round(total_grade / total_credit_count, 2)}"])
         table.add_row(["", "", "", "", f"Credit earned: {total_credit_count}"])
         print(table)
 

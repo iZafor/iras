@@ -80,3 +80,12 @@ def parse_grade(grade_code: str) -> float:
             return 1.0
         case _:
             return 0
+
+def get_semester_order(semester: str) -> int:
+    match semester:
+        case "Spring":
+            return 1
+        case "Summer":
+            return 2
+        case "Autumn":
+            return 3

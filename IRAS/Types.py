@@ -82,7 +82,7 @@ class RegisteredCourse:
             1 if name[-1] == "L" and name[-2].isdigit() else 3
         )
 
-Semester = NamedTuple("Semester", [("semester_name", str), ("courses", list[RegisteredCourse])])
+Semester = NamedTuple("Semester", [("semester_name", str), ("order", int), ("courses", list[RegisteredCourse])])
 
 AcademicYear = NamedTuple("AcademicYear", [("semesters", list[Semester])])
 
