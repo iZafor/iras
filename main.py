@@ -59,8 +59,8 @@ if __name__ == "__main__":
                         case 1:
                             iras.show_grades()
                         case 2:
-                            query_course_ids = input(COURSE_QUERY_PROMPT_TEXT)
-                            query_course_ids = [""] if query_course_ids == "a" else list(filter(lambda id: 5 < len(id) < 8, query_course_ids.split(" ")))
+                            query_course_text = input(COURSE_QUERY_PROMPT_TEXT)
+                            query_course_ids = [""] if query_course_text == "a" else list(filter(lambda id: 5 < len(id) < 8, query_course_text.split(" ")))
                             file_format = input(FILE_FORMAT_PROMPT_TEXT)
                             save_as = FILE_FORMATS[2]
                             match file_format.isdigit():
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                                             save_as = FILE_FORMATS[2]
                                         case _:
                                             print("Invalid file format! Saving as both...")
-                            iras.save_OfferedCourses(query_course_ids=query_course_ids, save_as=save_as)
+                            iras.save_OfferedCourses(query_course_ids=query_course_ids, save_as=save_as, all=query_course_text=="a")
                         case 3:
                             re_login = True
                             break

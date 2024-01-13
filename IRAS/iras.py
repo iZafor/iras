@@ -9,7 +9,7 @@ from tqdm import tqdm
 from prettytable.prettytable import PrettyTable
 
 import IRAS.constants as CONST
-from IRAS.Types import OfferedCourse, RegisteredCourse, AcademicYear, Semester, AuthData
+from IRAS.Types import OfferedCourse, RegisteredCourse, PreRequisiteCourse, AcademicYear, Semester, AuthData, BTree
 from IRAS.utils import save_as_txt, save_as_xls, get_formatted_time, parse_grade, get_semester_order
 
 class IRAS:
@@ -103,7 +103,7 @@ class IRAS:
         table.add_row(["", "", "", "", f"Credit earned: {total_credit_count}"])
         print(table)
 
-    def save_OfferedCourses(self, query_course_ids: list[str], save_as: str = "both") -> None:
+    def save_OfferedCourses(self, query_course_ids: list[str], save_as: str = "both", all: bool = False) -> None:
         """
         Expects a list of course ids and a saving format
         which can be one of 'both', 'txt' or 'xls'
@@ -111,13 +111,7 @@ class IRAS:
         if not query_course_ids:
             return print("No query found!")
         
-        query_course_ids = [id.lower() for id in query_course_ids]
-        queried_courses = []
-        sections_count = []
-        count = 0
-        prev_id = ""
-
-        offered_course_list = list(
+        offered_course_tree: BTree = BTree.NEW_INSTANCE(
             map(lambda c: OfferedCourse.NEW_INSTANCE(c, get_formatted_time),
                     self.__fetch_json_data(
                         api=CONST.ALL_OFFERED_COURSES_API(self.__student_id),
@@ -125,30 +119,46 @@ class IRAS:
                         )["data"]["eligibleOfferCourses"]
                 )
         )
-        pbar = tqdm(total=len(offered_course_list), desc="Finding match: ")
-        for course in offered_course_list:
-            if course.any_match(query_course_ids):
-                if prev_id != "" and prev_id not in course.course_id:
-                    sections_count.append(count)
-                    count = 1
-                else:
-                    count += 1
-                prev_id = course.course_id
-                queried_courses.append(course)
+        pre_requisite_course_tree: BTree = BTree.NEW_INSTANCE(
+            map(lambda c: PreRequisiteCourse.NEW_INSTANCE(c),
+                    self.__fetch_json_data(
+                        api=CONST.PRE_REQUISITES_API(self.__student_id),
+                        interval=0,
+                        progress_message="Fetching pre-requisites"
+                    )["data"] 
+                )
+        )
+
+        query_course_ids = [id.upper() for id in query_course_ids] if not all else [c.id for c in offered_course_tree]
+        queried_courses = []
+        sections_count = []
+        pre_requisite_courses = []
+        pre_requisite_courses_count = []
+        pbar = tqdm(total=len(query_course_ids), desc="Finding match: ")
+        for course_id in query_course_ids:
+            courses = offered_course_tree.get(course_id)
+            pre_reqs = pre_requisite_course_tree.get(course_id)
+            pre_reqs.extend(pre_requisite_course_tree.get(f"{course_id}L"))
+            queried_courses.extend(courses)
+            sections_count.append(len(courses))
+            pre_requisite_courses.extend(pre_reqs)
+            pre_requisite_courses_count.append(len(pre_reqs))
             pbar.update(1)
         pbar.close()
 
-        if not count:
+        if not queried_courses:
             return print("No match found!")
+
+        pre_requisite_courses_count = list(filter(lambda c: c != 0, pre_requisite_courses_count))
 
         match save_as:
             case "both":
-                save_as_txt(queried_courses, sections_count)
-                save_as_xls(queried_courses)
+                save_as_txt(queried_courses, sections_count, pre_requisite_courses, pre_requisite_courses_count)
+                save_as_xls(queried_courses, pre_requisite_courses)
             case "txt":
-                save_as_txt(queried_courses, sections_count)
+                save_as_txt(queried_courses, sections_count, pre_requisite_courses, pre_requisite_courses_count)
             case "xls":
-                save_as_xls(queried_courses)
+                save_as_xls(queried_courses, pre_requisite_courses)
 
     def __get_auth_token(self, id: int, password: str) -> str:
         try:

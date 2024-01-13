@@ -3,7 +3,7 @@ from os import getcwd
 from prettytable import PrettyTable
 
 import IRAS.constants as CONST
-from IRAS.Types import OfferedCourse
+from IRAS.Types import OfferedCourse, PreRequisiteCourse
 
 def get_formatted_time(time_str: str) -> str:
     day, time = time_str.split(" ")
@@ -26,8 +26,8 @@ def get_formatted_time(time_str: str) -> str:
 
     return f"{day} {st_hour}:{time_st[2:]}{st_notation}-{en_hour}:{time_en[2:]}{en_notation}"
 
-def save_as_txt(queried_courses: list[OfferedCourse], sections_count: list[int]) -> None:
-    table = PrettyTable(
+def save_as_txt(queried_courses: list[OfferedCourse], sections_count: list[int], pre_requisite_courses: list[PreRequisiteCourse], pre_requisite_courses_count: list[int]) -> None:
+    offered_course_table = PrettyTable(
         field_names=CONST.OFFERED_COURSE_FIELDS
     )
 
@@ -36,24 +36,49 @@ def save_as_txt(queried_courses: list[OfferedCourse], sections_count: list[int])
         if i < len(sections_count) and count == sections_count[i]:
             i += 1
             count = 0
-            table.add_row(["+"] * len(CONST.OFFERED_COURSE_FIELDS))
+            offered_course_table.add_row(["+"] * len(CONST.OFFERED_COURSE_FIELDS))
         count += 1
-        table.add_row(course.as_list())
+        offered_course_table.add_row(course.as_list())
 
-    txt_file_path = "files/course_details.txt"
+    if pre_requisite_courses:
+        pre_requisite_course_table = PrettyTable(
+            field_names=CONST.PRE_REQUISITE_FIELDS
+        )
+        i, count = 0, 0
+        for pre_course in pre_requisite_courses:
+            if i < len(pre_requisite_courses_count) and count == pre_requisite_courses_count[i]:
+                i += 1
+                count = 0
+                pre_requisite_course_table.add_row(["+"] * len(CONST.PRE_REQUISITE_FIELDS))
+            count += 1
+            pre_requisite_course_table.add_row(pre_course.as_list())
+
+    txt_file_path = CONST.OFFERED_COURSE_TEXT_FILE_PATH
     with open(txt_file_path, "w") as txt_file:
-        txt_file.writelines(str(table))
+        txt_file.writelines(str(offered_course_table))
+        if pre_requisite_courses:
+            txt_file.write("\n\n")
+            txt_file.write("Pre-requisites-")
+            txt_file.write("\n\n")
+            txt_file.write(str(pre_requisite_course_table))
     print(f"Text file is saved at {getcwd()}/{txt_file_path}.")
 
-def save_as_xls(queried_courses: list[OfferedCourse]) -> None:
-    xls_file_path = "files/course_details.xlsx"
+def save_as_xls(queried_courses: list[OfferedCourse], pre_requisite_courses: list[PreRequisiteCourse]) -> None:
+    xls_file_path = CONST.OFFERED_COURSE_EXCEL_FILE_PATH
     wb = xlsxwriter.Workbook(xls_file_path)
-    ws = wb.add_worksheet("Course Details")
+    ws = wb.add_worksheet("Offered courses")
     ws.write_row(0, 0, CONST.OFFERED_COURSE_FIELDS)
 
     for r in range(1, len(queried_courses)):
         ws.write_row(r, 0, queried_courses[r-1].as_list())
+
+    if pre_requisite_courses:
+        ws = wb.add_worksheet("Pre-requisites")
+        ws.write_row(0, 0, CONST.PRE_REQUISITE_FIELDS)
+        for r in range(1, len(pre_requisite_courses)):
+            ws.write_row(r, 0, pre_requisite_courses[r-1].as_list())
     wb.close()
+
     print(f"Excel file is saved at {getcwd()}/{xls_file_path}.")
 
 def parse_grade(grade_code: str) -> float:
