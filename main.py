@@ -58,7 +58,7 @@ if __name__ == "__main__":
                         case 1:
                             iras.show_grades()
                         case 2:
-                            query_course_ids = input(COURSE_QUERY_PROMPT_TEXT).split(" ")
+                            query_course_ids = list(filter(lambda id: 5 < len(id) < 8, input(COURSE_QUERY_PROMPT_TEXT).split(" ")))
                             file_format = input(FILE_FORMAT_PROMPT_TEXT)
                             save_as = FILE_FORMATS[2]
                             match file_format.isdigit():
