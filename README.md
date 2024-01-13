@@ -16,10 +16,21 @@ cd ./iras
 
 4. Install all the required packages
 ```python
+python -m pip install -r ./requirements.txt
+``` 
+&nbsp;&nbsp;&nbsp;&nbsp;or
+
+```python
 python3 -m pip install -r ./requirements.txt
 ```
 
 5. run the main.py file
 ```python
-python3 ./main
+python ./main.py
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;or
+
+```python
+python3 ./main.py
 ```
