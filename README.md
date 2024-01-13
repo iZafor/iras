@@ -1,6 +1,7 @@
-## Python script to see grades and save informations of offered courses (_only works for ```Independent University, Bangladesh```_).
+## Python script to see grades and save information of offered courses (_only works for ```Independent University, Bangladesh```_).
 
 ### Steps to follow:
+**```Important Note: Minimum requirement - Python3.10```**
 
 1. First clone the repository
 ```bash 
@@ -15,10 +16,10 @@ cd ./iras
 
 4. Install all the required packages
 ```python
-pip install -r ./requirements.txt
+python3 -m pip install -r ./requirements.txt
 ```
 
 5. run the main.py file
 ```python
-python ./main
+python3 ./main
 ```
