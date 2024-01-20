@@ -1,7 +1,7 @@
-## Python script to see grades and save information of offered courses (_only works for ```Independent University, Bangladesh```_).
+## Python script (**```Unofficial```**) to see grades and save information of offered courses (_only works for **```Independent University, Bangladesh```**_).
 
 ### Steps to follow:
-**```Important Note: Minimum requirement - Python3.10```**
+**```Minimum python version - Python3.10```**
 
 1. First clone the repository
 ```bash 
